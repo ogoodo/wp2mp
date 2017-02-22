@@ -16,6 +16,7 @@ webpack2多页测试
 ## 参考
     https://segmentfault.com/a/1190000008390333  webpack2配置
     https://github.com/glenjamin/webpack-hot-middleware  日更新配置
+    https://segmentfault.com/a/1190000007294861  html-webpack-plugin用法全解
 
 ## 代办
     System.import

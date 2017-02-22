@@ -1,0 +1,11 @@
+$bg-color: #2B3A43;
+pre {
+  padding: 15px;
+  background: $bg-color;
+  color: #DEDEDE;
+}
+.base64img {
+    height: 50px;
+    width: 100px;
+    background: $bg-color url('./bd_logo1.png') no-repeat center center;
+}
