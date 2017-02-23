@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const entryFiles = require('./entry-files.js')
 const WebpackMd5Hash = require('webpack-md5-hash')
+const merge = require('webpack-merge')
 const cfg = require('../config/env.config.js')
 cfg.init('production')
 var tmpldir = path.join(__filename, '../static/index.ejs.html')
@@ -15,8 +16,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const extractCSS = new ExtractTextPlugin('[name].[contenthash].css')
 
 // var entries = entryFiles.getEntry('./src/module/**/*.js') // 获得入口js文件
-var entries = entryFiles.getEntry('./src/modules/**/*.js') // 获得入口js文件
-console.log('entries:', entries)
+// var entries = entryFiles.getEntry('./src/modules/**/*.js') // 获得入口js文件
+// console.log('entries:', entries)
 const webpackConfig = {
 
   // 源文件根目录
@@ -25,7 +26,8 @@ const webpackConfig = {
   //   app: ['webpack-hot-middleware/client', './pages/app/app.js'],
   //   admin: './pages/admin/admin.js'
   // },
-  entry: entries,
+  // entry: entries,
+  entry: [],
   output: {
     path: cfg.path.OUT_PATH,
     // filename: cfg.server.outputFilename,
@@ -168,8 +170,45 @@ const webpackConfig = {
     })
   ]
 }
+let ls = []
 
-entryFiles.genVendors(webpackConfig.plugins)
-entryFiles.genMulPages(webpackConfig.plugins) // 获得入口js文件
-
-module.exports = webpackConfig
+var glob = require('glob')
+var globPath = './src/modules/*'
+// var globPath = './src/*'
+console.log('')
+console.log('打包模块入口路径:-----------------{{')
+glob.sync(globPath).forEach(function (entry) {
+  console.log('entry...: ' + entry)
+})
+console.log('打包模块入口路径:-----------------}}')
+console.log('')
+var i = 0
+// 还是不能打包成多个vendor.js
+glob.sync(globPath).forEach(function (entry) {
+  if (i++ !== 0) {
+    return
+  }
+  var jsEntry = './' + path.join(entry, '**/*.js')
+  var tmplEntry = './' + path.join(entry, '**/*.html')
+  var vendorEntry = './' + path.join(entry, '*')
+  vendorEntry = entry.replace('./src/', '')
+  // vendorEntry = 'modules'
+  console.log('')
+  console.log('')
+  console.log('')
+  console.log('      动态配置: ' + entry)
+  console.log('      jsEntry: ' + jsEntry)
+  console.log('    tmplEntry: ' + tmplEntry)
+  console.log('  vendorEntry: ' + vendorEntry)
+  let wc = merge(webpackConfig, {})
+  // wc.target = `target${i}`
+  var entries = entryFiles.getEntry(jsEntry) // 获得入口js文件
+  wc.entry = entries
+  entryFiles.genVendors(vendorEntry, wc.plugins)
+  entryFiles.genMulPages(tmplEntry, wc.plugins) // 获得入口js文件
+  ls.push(wc)
+})
+module.exports = ls
+// entryFiles.genVendors(webpackConfig.plugins)
+// entryFiles.genMulPages(webpackConfig.plugins) // 获得入口js文件
+// module.exports = webpackConfig
