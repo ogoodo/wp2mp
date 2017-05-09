@@ -3,6 +3,8 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const entryFiles = require('./entry-files.js')
 const WebpackMd5Hash = require('webpack-md5-hash')
+const MyPlugin = require('./wp-plugin.js');
+const MyLoader = require('./wp-loader.js');
 const merge = require('webpack-merge')
 const cfg = require('../config/env.config.js')
 cfg.init('production')
@@ -69,6 +71,18 @@ const webpackConfig = {
         ]
       },
       {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: [
+          {
+            loader: 'my-loader',
+            options: {
+              presets: ['a', 'b', 'test']
+            }
+          }
+        ]
+      },
+      {
         test: /\.vue$/,
         enforce: 'pre',
         loader: 'eslint-loader',
@@ -103,6 +117,7 @@ const webpackConfig = {
     ]
   },
   plugins: [
+   // new MyPlugin({options: 'nada'}),
     // extractCommons,
     extractCSS,
     new WebpackMd5Hash(), // 解决每次hash会变的问题
@@ -148,6 +163,11 @@ const webpackConfig = {
       // debug: !prod,
       // minimize: prod,
       options: {
+        'my-loader': {
+          a: 'test',
+          b: 'test-b',
+          c: ['a', 'b', 'test']
+        }
         // context: urls.project,
         // standard: {
         //   env: {
