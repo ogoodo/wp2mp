@@ -12,10 +12,12 @@ cfg.init()
 var app = express()
 app.use(logger('dev'))
 var compiler = webpack(webpackConfig)
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>')
+console.log(webpackConfig)
 
 app.use(webpackDevMiddleware(compiler, {
   // publicPath: "/" // 大部分情况下和 `output.publicPath`相同
-  publicPath: webpackConfig.output.publicPath,
+  publicPath: webpackConfig[0].output.publicPath,
   headers: { 'Access-Control-Allow-Origin': '*' },
   stats: { colors: true }
 }))
